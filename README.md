@@ -30,7 +30,7 @@ Our model performance:
 |------------|-----------|--------|---------|
 |Performance | TPR TNR ACC | TPR TNR ACC| TPR TNR ACC|
 |lambda = 0  |            |              |           |
-|lambda = 0.2|            |              |           |
+|lambda = 0.1|            |              |           |
 |lambda = 1.0|            |             |            |
 
 # Contributing
