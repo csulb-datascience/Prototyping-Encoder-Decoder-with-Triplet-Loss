@@ -28,9 +28,9 @@ You can download pretrained models here: [Pretrained model](https://www.google.c
 Our model performance:
 | Noise rate |     0%    |   5%   |   10%   | 
 |------------|-----------|--------|---------|
-|Performance | TPR TNR ACC | TPR TNR ACC| TPR TNR ACC|
-|lambda = 0  |            |              |           |
-|lambda = 0.1|            |              |           |
-|lambda = 1.0|            |             |            |
+|Performance | TPR TNR ACC| TPR TNR ACC  | TPR TNR ACC|
+|lambda = 0  |            |              |            |
+|lambda = 0.1|            |              |            |
+|lambda = 1.0|            |              |            |
 
 # Contributing
