@@ -33,4 +33,9 @@ Our model performance:
 |lambda = 0.1|            |              |            |
 |lambda = 1.0|            |              |            |
 
+Distance Distribution:
+![Histogram](images/hist.png)
+T-sne:
+![Histogram](images/t-sne.png)
+
 # Contributing
