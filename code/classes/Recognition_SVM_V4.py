@@ -1,3 +1,10 @@
+# Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
+# version: 4.0
+# Author: CSULB Data Science Lab Team
+# Date: June 2020
+#
+#Include a reference to this site if you will use this code.
+
 import numpy as np
 from sklearn import svm
 from sklearn.svm import OneClassSVM
