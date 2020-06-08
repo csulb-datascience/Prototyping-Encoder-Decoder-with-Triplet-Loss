@@ -1,3 +1,10 @@
+# Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
+# version: 1.0
+# Author: CSULB Data Science Lab Team
+# Date: June 2020
+#
+#Include a reference to this site if you will use this code.
+
 import tensorflow as tf
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Conv1D
