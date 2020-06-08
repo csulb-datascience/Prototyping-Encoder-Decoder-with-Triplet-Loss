@@ -15,8 +15,11 @@ We repeat our experiment 20 times. Each time, we select 80% of 30 participants r
 For each repetition, our proposed method is trained and tested independently, then the averaged evaluation metrics are summarized.
 
 # Evaluation
-We divide our testset into known and unknown data sets. We define a unit step in the known test data set as true positive (TP) if it is recognized correctly, and false negative (FN) otherwise. Also, we define a unit step in the unknown data set as true negative (TN) if it is not recognized as any known participant, and false positive (FP) otherwise. 
+We divide our test set into known and unknown data sets. We define a unit step in the known test data set as true positive (TP) if it is recognized correctly, and false negative (FN) otherwise. Also, we define a unit step in the unknown data set as true negative (TN) if it is not recognized as any known participant, and false positive (FP) otherwise. 
+<br/>
 
+<br/>
+We report true postive rate *TPR = \frac{TP}{(TP + FN)}*, true negative rate *TNR = TN/(TN + FP)*, and accuracy *ACC = (TP + TN)/(TP + FN + TN + FP)*
 
 
 
