@@ -8,7 +8,8 @@ pip install -r requirements.txt
 # Training
 To train the models() in the paper, run this command:
 ```
-cd code/python training.py
+cd code
+python training.py
 ```
 We repeat our experiment 20 times. Each time, we select 80% of 30 participants randomly. For each participant in selected 24 people, 75% of unit steps are allocated to the training set and the rest is assigned to the known test data set. In addition, for the remaning 20% of 30 participants(6 people), all unit steps belong to unknown test data set. <br/><br/>
 For each repetition, our proposed method is trained and tested independently, then the averaged evaluation metrics are summarized.
