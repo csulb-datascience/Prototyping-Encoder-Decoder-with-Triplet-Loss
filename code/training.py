@@ -86,9 +86,9 @@ lambdas = [0.0, 0.1]
 thresholds = [-0.1, -0.05]
 gammas = [1.0, 1.5]
 nus = [0.1, 0.2]
-epochs =  1 #40
+epochs =  40
 batchSize = 64
-iterations=2 #20
+iterations= 20
 
 #Repeat training 
 for i in range(1, iterations+1):
