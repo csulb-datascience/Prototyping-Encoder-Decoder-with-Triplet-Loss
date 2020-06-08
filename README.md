@@ -21,7 +21,7 @@ We divide our testset into known and unknown data sets. We define a unit step in
 
 
 # Pre-trained Models
-You can download pretrained models here: [Pretrained model](https://www.google.com)
+You can download pretrained models here: [Pretrained model](https://drive.google.com/file/d/1Rrrc_qbS7MHi9rIxmBGU38nNxuq6AM_y/view?usp=sharing)
 
 
 # Results
