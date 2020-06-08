@@ -19,7 +19,7 @@ We divide our test set into known and unknown data sets. We define a unit step i
 <br/>
 
 <br/>
-We report true postive rate *TPR = \frac{TP}{(TP + FN)}*, true negative rate *TNR = TN/(TN + FP)*, and accuracy *ACC = (TP + TN)/(TP + FN + TN + FP)*
+We report true postive rate *TPR = TP/(TP + FN)*, true negative rate *TNR = TN/(TN + FP)*, and accuracy *ACC = (TP + TN)/(TP + FN + TN + FP)*
 
 
 
