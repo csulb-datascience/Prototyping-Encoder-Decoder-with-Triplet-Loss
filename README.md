@@ -36,6 +36,8 @@ Our model performance:
 |lambda = 0.1|            |              |            |
 |lambda = 1.0|            |              |            |
 
+Performance as function of lambda:
+![Lambda](images/lambda.png)
 Distance Distribution:
 ![Histogram](images/hist.png)
 T-sne:
