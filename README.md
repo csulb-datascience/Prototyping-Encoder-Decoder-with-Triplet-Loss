@@ -23,8 +23,8 @@ We report true postive rate *TPR = TP/(TP + FN)*, true negative rate *TNR = TN/(
 
 
 
-# Pre-trained Models
-You can download pretrained models here: [Pretrained model](https://drive.google.com/file/d/1Rrrc_qbS7MHi9rIxmBGU38nNxuq6AM_y/view?usp=sharing)
+# Pre-trained Model
+You can download pretrained model here: [Pretrained model](https://drive.google.com/file/d/1Rrrc_qbS7MHi9rIxmBGU38nNxuq6AM_y/view?usp=sharing)
 
 
 # Results
