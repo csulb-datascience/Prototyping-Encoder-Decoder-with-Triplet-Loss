@@ -1,5 +1,5 @@
 # Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
-# version: 1.0
+# version: 4.0
 # Authors: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
