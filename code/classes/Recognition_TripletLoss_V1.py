@@ -128,7 +128,7 @@ def _masked_minimum(data, mask, dim=1):
 # In this routine the authors added the hypermaremeter beta to the original
 # triplet_semihard_loss function
 # This is the loss function interface used in the definition of the network 
-# arquitecture
+# architecture
 # ==============================================================================
 def custom_loss(margin, beta):
   '''
