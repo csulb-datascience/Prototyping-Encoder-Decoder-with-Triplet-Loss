@@ -9,7 +9,13 @@
 # In addition, for the remaning 20% of 30 participants(6 people), all unit steps belong to 
 # unknown test data set.
 #
-# By CSULB Data Science Lab Team
+# version: 1.0
+# Authors: 
+#      Nelson Minaya, email: nelson.minaya@student.csulb.edu
+#      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
+# Date: June 2020
+#
+#Include a reference to this site if you will use this code.
 
 import tensorflow as tf
 import pandas as pd
