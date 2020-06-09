@@ -124,9 +124,12 @@ def _masked_minimum(data, mask, dim=1):
         keepdims=True) + axis_maximums
     return masked_minimums
 
-
-#In this routine the authors added to the oiginal triplet loss function the hypermaremeter beta.
-#This is the loss function interface used in the definition of the network arquitecture
+# ==============================================================================
+# In this routine the authors added the hypermaremeter beta to the original
+# triplet_semihard_loss function
+# This is the loss function interface used in the definition of the network 
+# arquitecture
+# ==============================================================================
 def custom_loss(margin, beta):
   '''
   Use this for triplet semi hard loss
@@ -201,14 +204,16 @@ def custom_loss(margin, beta):
   return triplet_semihard_loss
 
 
-#This is a new subroutine that combines the triplet loss with the prototype loss
-#proposed by this work.
+# ==============================================================================
+# This is a new subroutine that combines the triplet_semihard_losss with 
+# the prototype loss proposed by this work.
 #
-#Computes the triplet loss with semi-hard negative mining and the prototype loss
+# Computes the triplet loss with semi-hard negative mining and the prototype loss
+# ==============================================================================
 def combined_loss(y_true, y_pred, decoded, c_mean, alpha, beta, lamda):
             
     #***********************************************************************
-    # Triplet Loss
+    # triplet_semihard_losss
     #***********************************************************************
     labels, embeddings = y_true, y_pred
     # Reshape label tensor to [batch_size, 1].
