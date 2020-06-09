@@ -29,10 +29,10 @@ You can download pretrained model here: [Pretrained model](https://drive.google.
 Our model performance:
 | Noise rate |     0%    |   5%   |   10%   | 
 |------------|-----------|--------|---------|
-|Performance | TPR TNR ACC| TPR TNR ACC  | TPR TNR ACC|
-|lambda = 0  |            |              |            |
-|lambda = 0.1|            |              |            |
-|lambda = 1.0|            |              |            |
+|Performance |  TPR TNR ACC   | TPR TNR ACC  | TPR TNR ACC|
+|lambda = 0  |0.973 0.979 0.976|0.967 0.981 0.974 |0.946 0.983 0.965            |
+|lambda = 0.1|0.975 0.994 **0.984**|0.970 0.995 **0.982**|0.954 0.997 **0.976**|
+|lambda = 1.0|0.966 0.949 0.958|0.958 0.952 0.955|0.918 0.958 0.938            |
 
 Performance as function of lambda:
 ![Lambda](images/lambda.png)
