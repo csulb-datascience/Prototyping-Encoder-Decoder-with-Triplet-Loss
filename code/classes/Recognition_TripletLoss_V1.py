@@ -1,17 +1,38 @@
 # Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
-# version: 1.0
-# Author: CSULB Data Science Lab Team
-# Date: June 2020
 #
-#Include a reference to this site if you will use this code.
+# The triplet loss code belongs to Tensorflow Addons:
+#   https://github.com/tensorflow/addons/blob/v0.9.1/tensorflow_addons/losses/triplet.py
+#
+# The added Prototype Loss belongs to the authors.
+# version: 1.0
+# Authors: 
+#      Nelson Minaya, email: nelson.minaya@student.csulb.edu
+#      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
+# Date: June 2020
 
-'''
-Code from tensorflow addon library
-'''
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+'''
+Code from tensorflow addon library
+https://github.com/tensorflow/addons/blob/v0.9.1/tensorflow_addons/losses/triplet.py
+'''
+
+# Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 import tensorflow as tf
 import numpy as np
 from tensorflow.python.ops import array_ops
@@ -104,6 +125,7 @@ def _masked_minimum(data, mask, dim=1):
     return masked_minimums
 
 
+#In this routine the authors added to the oiginal triplet loss function the hypermaremeter beta.
 #This is the loss function interface used in the definition of the network arquitecture
 def custom_loss(margin, beta):
   '''
@@ -179,7 +201,9 @@ def custom_loss(margin, beta):
   return triplet_semihard_loss
 
 
-
+#This is a new subroutine that combines the triplet loss with the prototype loss
+#proposed by this work.
+#
 #Computes the triplet loss with semi-hard negative mining and the prototype loss
 def combined_loss(y_true, y_pred, decoded, c_mean, alpha, beta, lamda):
             
