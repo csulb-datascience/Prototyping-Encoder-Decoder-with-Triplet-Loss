@@ -17,7 +17,7 @@ For each repetition, our proposed method is trained and tested independently, th
 # Evaluation
 We divide our test set into known and unknown data sets. We define a unit step in the known test data set as true positive (TP) if it is recognized correctly, and false negative (FN) otherwise. Also, we define a unit step in the unknown data set as true negative (TN) if it is not recognized as any known participant, and false positive (FP) otherwise. 
 <br/>
-We report true postive rate ![equation one](https://latex.codecogs.com/gif.latex?%5Ctiny%20TPR%3D%20%5Cfrac%7BTP%7D%7BTP%20&plus;%20FN%7D), true negative rate ![equation two](https://latex.codecogs.com/gif.latex?%5Cdpi%7B100%7D%20%5Csmall%20TNR%3D%20%5Cfrac%7BTN%7D%7BTN%20&plus;%20FP%7D), and accuracy ![equation three](https://latex.codecogs.com/gif.latex?%5Ctiny%20ACC%20%3D%20%5Cfrac%7BTP%20&plus;%20TN%7D%7BTP%20&plus;%20FN%20&plus;%20TN%20&plus;%20FP%7D)
+We report true postive rate ![equation one](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Cdpi%7B100%7D%20%5Csmall%20TPR%3D%20%5Cfrac%7BTP%7D%7BTP%20&plus;%20FN%7D), true negative rate ![equation two](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Cdpi%7B100%7D%20%5Csmall%20TNR%3D%20%5Cfrac%7BTN%7D%7BTN%20&plus;%20FP%7D), and accuracy ![equation three](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Cdpi%7B100%7D%20%5Csmall%20ACC%20%3D%20%5Cfrac%7BTP%20&plus;%20TN%7D%7BTP%20&plus;%20FN%20&plus;%20TN%20&plus;%20FP%7D)
 
 
 
