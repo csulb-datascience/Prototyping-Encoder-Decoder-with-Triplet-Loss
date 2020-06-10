@@ -6,7 +6,7 @@ To install requirements:
 pip install -r requirements.txt
 ```
 # Training
-To train the models() in the paper, run this command:
+To train the models in the paper, run this command:
 ```
 cd code
 python training.py
