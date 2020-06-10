@@ -38,7 +38,7 @@ Performance as function of lambda:
 ![Lambda](images/lambda.png)
 Distance Distribution:
 ![Histogram](images/hist.png)
-T-sne:
+t-SNE:
 ![Histogram](images/t-sne.png)
 
 # Contributors
