@@ -41,4 +41,6 @@ Distance Distribution:
 T-sne:
 ![Histogram](images/t-sne.png)
 
-# Contributing
+# Contributors
+Nelson Minaya nelson.minaya@student.csulb.edu
+Nhat Le nhat.le01@student.csulb.edu
