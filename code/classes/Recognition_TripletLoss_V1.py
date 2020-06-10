@@ -16,7 +16,7 @@ from __future__ import print_function
 
 '''
 Code from tensorflow addon library
-https://github.com/tensorflow/addons/blob/v0.9.1/tensorflow_addons/losses/triplet.py
+https://github.com/tensorflow/addons/blob/v0.9.1/tensorflow_addons/losses
 '''
 
 # Copyright 2019 The TensorFlow Authors. All Rights Reserved.
