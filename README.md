@@ -42,5 +42,5 @@ T-sne:
 ![Histogram](images/t-sne.png)
 
 # Contributors
-Nelson Minaya https://github.com/nchminaya
+Nelson Minaya https://github.com/nchminaya <br/>
 Nhat Le https://github.com/nhat-le01
