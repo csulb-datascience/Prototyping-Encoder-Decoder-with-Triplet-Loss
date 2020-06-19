@@ -42,5 +42,5 @@ t-SNE:
 ![Histogram](images/t-sne.png)
 
 # Contributors
-Nelson Minaya https://github.com/nchminaya <br/>
-Nhat Le https://github.com/nhat-le01
+Nelson Minaya nelson.minaya@student.csulb.edu <br/>
+Nhat Le nhat.le01@student.csulb.edu
