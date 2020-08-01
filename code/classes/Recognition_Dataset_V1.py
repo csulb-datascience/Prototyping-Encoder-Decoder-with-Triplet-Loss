@@ -1,26 +1,28 @@
-# Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
-# version: 1.0
+# csulb-datascience
+#
 # Authors: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
+#
+# Class version: 1.0
 # Date: June 2020
 #
-#Include a reference to this site if you will use this code.
-
+# Include a reference to this site if you will use this code.
 
 import pandas as pd
 import numpy as np
 import random
 
 class Dataset:
-    def __init__(self, path, fileName):
+    def __init__(self, path=None, fileName=None):
         self.user = []
         self.unitsMap = {}
         self.trainingSet = {}
         self.validationSet ={}
         self.unseenSet={}
         self.testSet ={}
-        self.loadData(path, fileName)
+        #upload the data if required
+        if fileName != None: self.loadData(path, fileName)
 
     #return the size of the unit step if there is at least a user in the dataset
     def unitSize(self):
@@ -35,11 +37,18 @@ class Dataset:
         return(None)
 
     #Save the datasets on disk
-    def saveSets(self, path, fileName):
+    def saveSets(self, path, fileName, includeMap = False):
+        #By default save all subsets
         summary = {"training":self.trainingSet,"validation":self.validationSet,
                    "unseen":self.unseenSet, "test":self.testSet}
+        #Add the map if required
+        if includeMap:
+            summary["map"] = self.unitsMap
+            summary["user"] = self.user            
+            
+        #save it as a numpy array
         np.save(path + "/" + fileName, summary)
-        
+                
     #load the dataset index saved with saveSets
     def loadSets(self, path, fileName):
         summary = np.load(path + "/" + fileName, allow_pickle='TRUE').item()
@@ -47,6 +56,11 @@ class Dataset:
         self.validationSet = summary["validation"]
         self.unseenSet = summary["unseen"]
         self.testSet = summary["test"]
+        
+        #Load the map if it is available
+        if "map" in summary.keys():
+            self.user = summary["user"]
+            self.unitsMap = summary["map"]
                  
     #Reads the dataset from disk and creates it in memory as a dictionary
     def loadData (self, path, fileName):
@@ -90,7 +104,26 @@ class Dataset:
         self.unseenSet = self.getDataIndex(self.notTrainingPeople(), 1.0) #100%
         self.testSet = self.validationSet.copy()
         self.testSet.update(self.unseenSet)  #test set includes validation and unseen data
-                    
+
+    #splits the dataset in three parts
+    #training set -> 100% units of numberPeopleTraining;
+    #validation set -> 100% units of numberPeopleValidation;
+    #unseen set ->  100% units of remaining people;
+    #test set -> validation + unseen
+    def split(self, numberPeopleTraining, numberPeopleValidation):
+        trainingPeople = set(random.sample(list(self.user), numberPeopleTraining))
+        self.trainingSet = self.getDataIndex(trainingPeople, 1.0) #100%
+        
+        remainder = set(self.user) - trainingPeople
+        validationPeople = set(random.sample(list(remainder), numberPeopleValidation))
+        self.validationSet = self.getDataIndex(validationPeople, 1.0) #100%
+        
+        remainder = (set(self.user) - trainingPeople) - validationPeople
+        self.unseenSet = self.getDataIndex(remainder, 1.0) #100%
+        
+        self.testSet = self.validationSet.copy()
+        self.testSet.update(self.unseenSet)  #test set includes validation and unseen data
+        
     #return the set of people included in the training dataset        
     def trainingPeople(self):
         return(set(self.trainingSet.keys()))
@@ -150,17 +183,21 @@ class Dataset:
                 self.unitsMap[key][i] = unit * noise
         
     #Convert a index dataset to array dataset        
-    def toArray(self, dataIndex, noisePercent=0, normalized=True):
+    def toArray(self, dataIndex, noisePercent=0, normalized=True, shuffled=False):
         unitMean = self.getMeanUnit(dataIndex, normalized)
-        x, y, m = [],[],[]
+        data = []
         for key in dataIndex.keys():
             for i in dataIndex[key]:
                 unit = np.array(self.unitsMap[key][i])
-                noise = self.getNoiseMatrix(unit.shape, noisePercent)                
-                y.append(key)
-                x.append(unit * noise)
-                m.append(unitMean[key])
-        return(np.asarray(x), np.asarray(y), np.asarray(m))
+                noise = self.getNoiseMatrix(unit.shape, noisePercent)
+                data.append((key, unit*noise, unitMean[key]))
+        
+        data = np.array(data)
+        if shuffled==True: np.random.shuffle(data)
+        y = np.array([key for key in data[:,0]])
+        x = np.array([unit for unit in data[:,1]])
+        m = np.array([mean for mean in data[:, 2]])
+        return(x, y, m)
     
     # Returns the dataset where the units are interleaved: 
     # one unit person 1, one unit person 2, ..., one unit person n, one unit person 1, ...
@@ -182,44 +219,62 @@ class Dataset:
         return(np.asarray(x), np.asarray(y), np.asarray(m))
 
     #return the dataset generated by an index dataset
-    def getDataset(self, dataIndex, noisePercent=0, interleaved=True):
+    def getDataset(self, dataIndex, noisePercent=0, batchSize=1, shuffled=True, interleaved=False):
         x, y, m = self.toArrayInterleaved(dataIndex, noisePercent) \
-               if interleaved else self.toArray(dataIndex, noisePercent) 
-        press_x = np.asarray(x[:, :, 0:16])
-        acc_x = np.asarray(x[:, :, 16:22])
-        gyro_x = np.asarray(x[:, :, 22:])
-        return([press_x, acc_x, gyro_x], y)
-
-    #return the dataset with an additional Y added to X
-    def getDatasetAugmented(self, dataIndex, noisePercent=0, interleaved=True, multiple=1):
-        x, y, m = self.toArrayInterleaved(dataIndex, noisePercent) \
-               if interleaved else self.toArray(dataIndex, noisePercent) 
+               if interleaved else self.toArray(dataIndex, noisePercent, shuffled=shuffled) 
         
-        length = multiple * (len(y) // multiple)
+        #Drop the last batch if it is not enough big
+        length = batchSize * (len(y) // batchSize)
+        if len(y)-length >= 2 * len(np.unique(y)): length = len(y)
+            
+        press_x = np.asarray(x[:length, :, 0:16])
+        acc_x = np.asarray(x[:length, :, 16:22])
+        gyro_x = np.asarray(x[:length, :, 22:])
+        return([press_x, acc_x, gyro_x], y[:length], m[:length])
+    
+        #x = x.reshape((x.shape[0], x.shape[1], x.shape[2], 1))
+        #x = np.stack([x]*3, axis=-1)
+        #return(x[:length], y[:length], m[:length])
+
+    
+    #return the dataset with an additional Y added to X
+    def getDatasetAugmented(self, dataIndex, noisePercent=0, batchSize=1, shuffled=True, interleaved=False):
+        x, y, m = self.toArrayInterleaved(dataIndex, noisePercent) \
+               if interleaved else self.toArray(dataIndex, noisePercent, shuffled=shuffled) 
+        
+        #Drop the last batch if it is not enough big
+        length = batchSize * (len(y) // batchSize)
+        if len(y)-length >= 2 * len(np.unique(y)): length = len(y)
+                
         press_x = np.asarray(x[:length, :, 0:16])
         acc_x = np.asarray(x[:length, :, 16:22])
         gyro_x = np.asarray(x[:length, :, 22:])
         return([press_x, acc_x, gyro_x, y[:length], m[:length]], y[:length])
     
+    
     #return the training dataset
-    def getTrainingDataset(self, noisePercent=0):
-        return(self.getDataset(self.trainingSet, noisePercent))
+    def getTrainingDataset(self, noisePercent=0, batchSize=1):
+        return(self.getDataset(self.trainingSet, noisePercent, batchSize))
                 
     #return the validation dataset
-    def getValidationDataset(self, noisePercent=0):
-        return(self.getDataset(self.validationSet, noisePercent))
+    def getValidationDataset(self, noisePercent=0, batchSize=1):
+        return(self.getDataset(self.validationSet, noisePercent, batchSize))
     
     #Return k random units step indexes for each id
     def selectRandomUnits(self, dataIndex, k):
         result = dict()
+        complement = dict()
         for key in dataIndex:
             if k >= len(dataIndex[key]):
                 result[key] = dataIndex[key].copy()
             else:
-                result[key] = random.sample(dataIndex[key], k)
-        return result
+                units = random.sample(dataIndex[key], k)
+                result[key] = units
+                complement[key] = list(set(dataIndex[key]) - set(units))
+        return result, complement
     
     #return the training people with k random unit step indexes
     def selectRandomTrainingUnits (self, k):
-        return(self.selectRandomUnits(self.trainingSet, k))
+        training, _ = self.selectRandomUnits(self.trainingSet, k)
+        return(training)
     
