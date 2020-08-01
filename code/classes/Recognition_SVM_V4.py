@@ -1,14 +1,15 @@
-# Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
-# version: 4.0
+# csulb-datascience
+#
 # Authors: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
+#
+# Class version: 4.0
 # Date: June 2020
 #
-#Include a reference to this site if you will use this code.
+# Include a reference to this site if you will use this code.
 
 import numpy as np
-from sklearn import svm
 from sklearn.svm import OneClassSVM
 from Recognition_EmbeddingsDataset_V1 import EmbeddingsDataset
 
@@ -22,21 +23,39 @@ class SVM:
         
     #trains instances of SVM.svc according to dataIndex information
     #Turn in to a binary classification problem, label 1 for current_id, and -1 for the rest    
-    def fit(self, dataIndex, gamma=0.1, C=1.0, classWeight=True, nu = 0.5):
+    def fit(self, dataIndex, gamma=0.1, nu = 0.5):
         self.results=None
         self.classifier.clear()
         self.centroids = self.embeddings.getCentroids(dataIndex)
         x, y = self.embeddings.getDataset(dataIndex)
         for key in dataIndex:
-            yBinary = [1 if userId==key else -1 for userId in y]
-            yBinary = np.asarray(yBinary)
+            yBinary = np.asarray([1 if userId==key else -1 for userId in y])
             x_current = x[yBinary == 1]           
             svc = OneClassSVM(kernel='rbf', gamma=gamma, nu = nu)
             self.classifier[key] = svc.fit(x_current)
         return(self.classifier, self.centroids)        
-    
+
+    ##find the closest centroid. returns the user id who has the closest centroid
+    def getClosestCentroid(self, embeddedVector):
+        closest = -1
+        minDist = float("inf")
+        for key in self.centroids:
+            dist = np.linalg.norm(embeddedVector - self.centroids[key]) 
+            if dist < minDist:
+                minDist = dist
+                closest = key
+        return(closest)
+        
+    #returns the closest user Id if it is an inlier, otherwise -1
+    def predictClosest(self, key, unitId, threshold):
+        embeddedVector = self.embeddings.getEmbedded(key, unitId)                
+        closest = self.getClosestCentroid(embeddedVector)         
+        predicted = self.classifier[closest].decision_function([embeddedVector])[0]
+        if predicted < threshold: closest = -1
+        return(closest)
+        
     #returns the accuracy of the trained network
-    def accuracy(self, dataIndexSeen, dataIndexUnseen, threshold=-1):
+    def accuracy(self, dataIndexSeen, dataIndexUnseen, threshold):
         score1 = self.test(dataIndexSeen, threshold)
         score2 = self.test(dataIndexUnseen, threshold)  
         acc1 = score1[2] / score1[0]
@@ -49,37 +68,12 @@ class SVM:
         score = [0,0,0,0]
         for key in dataIndexTest:
             for unitId in dataIndexTest[key]:
-                embeddedVector = self.embeddings.getEmbedded(key, unitId)
-                
-                closest = self.getClosestCentroid(embeddedVector) 
-                if threshold == None:
-                    predicted = self.classifier[closest].predict([embeddedVector]) 
-                    if predicted == -1: closest = -1
-                else:
-                    predicted = self.classifier[closest].decision_function([embeddedVector])
-                    
-                    if predicted[0] * threshold > 0 and predicted[0] > threshold: 
-                        closest = key
-                    else:
-                        if predicted[0] > 0: closest = key
-                        if predicted[0] < 0: closest = -1
-                    
-                case=1 if closest==-1 else 2 if closest==key else 3
+                prediction = self.predictClosest(key, unitId, threshold)
+                case=1 if prediction==-1 else 2 if prediction==key else 3
                 score[case] +=1  #counter of each case
                 score[0]+=1      #total of tests
-        return score
-        
-    ##find the closest centroid. returns the user id who has the closest centroid
-    def getClosestCentroid(self, embeddedVector):
-        closest = -1
-        minDist = float("inf")
-        for key in self.centroids:
-            dist = np.linalg.norm(embeddedVector - self.centroids[key]) #max ~1.9
-            if dist < minDist:
-                minDist = dist
-                closest = key
-        return(closest)
-    
+        return score        
+
     #Prints the accuracy according to the last obtained results
     def printAccuracy(self):
         print("Accuracy validation dataset=", self.results[0])
