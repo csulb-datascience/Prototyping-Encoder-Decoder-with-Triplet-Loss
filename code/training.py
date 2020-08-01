@@ -9,11 +9,11 @@
 # In addition, for the remaning 20% of 30 participants(6 people), all unit steps belong to 
 # unknown test data set.
 #
-# version: 1.0
+# version: 2.0
 # Authors: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
-# Date: June 2020
+# Date: July 2020
 #
 #Include a reference to this site if you will use this code.
 
@@ -24,18 +24,9 @@ import pandas as pd
 import sys
 sys.path.append("./classes")
 from Recognition_Dataset_V1 import Dataset
-from Recognition_Autoencoder_V1 import Autoencoder
+from Recognition_Autoencoder_V2 import Autoencoder
 from Recognition_EmbeddingsDataset_V1 import EmbeddingsDataset
 from Recognition_SVM_V4 import SVM
-
-
-#If running under eager mode ,tensorflow op will check if the inputs are 
-#of type "tensorflow.python.framework.ops.EagerTensor" and keras ops are 
-#implemented as DAGs. So the inputs to the eagermode will be of 
-#"tensorflow.python.framework.ops.Tensor" and this throws the error
-# (https://github.com/tensorflow/tensorflow/issues/34944)
-tf.config.experimental_run_functions_eagerly(True)
-
 
 #Save the header for the CSV file
 def saveHeader(saveAs):
@@ -61,7 +52,6 @@ def save(saveAs, iteration, gamma, nu, threshold, lambdaVal, noise, results):
     data = pd.DataFrame(data= values)    
     data.to_csv(saveAs, header=None, mode="a")  
 
-
 pathData = "../data"
 fileData = "data_cond1_c2.csv"
 
@@ -76,7 +66,6 @@ datasetNoise5.turnToNoisy(5)
 datasetNoise10 = Dataset(pathData, fileData)
 datasetNoise10.turnToNoisy(10)
 print("--> datasets ready")
-
 
 #CSV file
 saveAs = "./summary.csv"
@@ -105,8 +94,8 @@ for i in range(1, iterations+1):
     datasetNoise10.loadSets(".","datasets.npy")
     
     print("--> Getting the datasets for training")
-    x_train, y_train = dataset.getDatasetAugmented(dataset.trainingSet, multiple=batchSize)
-    x_valid, y_valid = dataset.getDatasetAugmented(dataset.validationSet, multiple=batchSize)
+    x_train, y_train, m_train = dataset.getDataset(dataset.trainingSet, batchSize=batchSize)
+    x_valid, y_valid, m_valid = dataset.getDataset(dataset.validationSet, batchSize=batchSize)
     
     #Train SVM for each lambda
     for lambdaVal in lambdas:
@@ -115,9 +104,10 @@ for i in range(1, iterations+1):
         print("--> training the autoencoder")
         autoencoder = Autoencoder(dataset.unitSize(), alpha, beta, lambdaVal, learningRate)
         outerModel, encoder = autoencoder.getAutoencoderCNN()
-        outerModel.fit(x_train, y_train, batch_size = batchSize, epochs = epochs,
-                            validation_data=(x_valid, y_valid))
-                            
+        outerModel.fit(x_train, y={"encoder": y_train, "decoder": m_train},
+               batch_size = batchSize, epochs = epochs, 
+               validation_data = (x_valid, {"encoder": y_valid, "decoder": m_valid}))
+        
         print("--> Predicting embeddings")
         embeddings = EmbeddingsDataset(encoder, dataset)
         embeddings.predictEmbeddings()            
@@ -132,11 +122,11 @@ for i in range(1, iterations+1):
         #Train SVM with different gammas
         for gamma in gammas:
             for nu in nus:
-                for tau in thresholds:
-                    print("--> Train SVM: gamma=", gamma, " nu=", nu)
-                    svm = SVM(embeddings)
-                    svm.fit(randomTrainingSet, gamma=gamma, nu = nu)
-                        
+                print("--> Train SVM: gamma=", gamma, " nu=", nu)
+                svm = SVM(embeddings)
+                svm.fit(randomTrainingSet, gamma=gamma, nu = nu)
+
+                for tau in thresholds:                
                     print("--> Test Noise 0%, tau=", tau)
                     results = svm.accuracy(dataset.validationSet, dataset.unseenSet, tau)
                     save(saveAs, i, gamma, nu, tau, lambdaVal, 0.00, results)
