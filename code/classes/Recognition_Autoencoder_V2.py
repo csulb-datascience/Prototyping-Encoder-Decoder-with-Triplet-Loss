@@ -53,7 +53,6 @@ class Autoencoder:
     
     
     def getCompiledCNN(self):
-        #losses = {"encoder": custom_loss(self.alpha, self.beta), "decoder": PrototypeLoss()}
         losses = {"encoder": TripletSemiHardLoss(self.alpha, self.beta), "decoder": PrototypeLoss()}
         lossWeights = {"encoder": 1.0, "decoder": self.lambdaVal}        
         autoencoder, encoder = self.getAutoencoderCNN()
