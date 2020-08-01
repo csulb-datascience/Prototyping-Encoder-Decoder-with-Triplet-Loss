@@ -16,9 +16,6 @@ import tensorflow as tf
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-
-import sys
-sys.path.append("../classes")
 from Recognition_DecoderModel_V2 import DecoderModel
 from Recognition_EncoderModel_V2 import EncoderModel
 from Recognition_TripletLoss_V2 import TripletSemiHardLoss
