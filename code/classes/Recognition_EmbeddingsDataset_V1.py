@@ -1,16 +1,17 @@
-# Project: Prototyping-Encoder-Decoder-with-Triplet-Loss
-# version: 1.0
+# csulb-datascience
+#
 # Authors: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #      Nhat Anh Le,   email: nhat.le01@student.csulb.edu
+#
+# Class version: 1.0
 # Date: June 2020
 #
-#Include a reference to this site if you will use this code.
+# Include a reference to this site if you will use this code.
 
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
 from sklearn.manifold import TSNE
 from Recognition_Dataset_V1 import Dataset
 
@@ -36,7 +37,7 @@ class EmbeddingsDataset:
     #returns the encoded embedded vector
     def encode(self, unitStep):
         if self.network == None: return None
-        embedded = self.network.predict(self.prepareImage(unitStep)) 
+        embedded = self.network.predict(self.prepareImage(unitStep))
         return embedded.reshape(embedded.shape[1])
     
     #returns the embedded vector of a unit step
@@ -49,7 +50,7 @@ class EmbeddingsDataset:
     #predict all the embeddings
     def predictEmbeddings(self):
         allDataset = self.dataset.getDataIndex(self.dataset.user, 1.0)
-        x, y = self.dataset.getDataset(allDataset, interleaved=False)
+        x, y, _ = self.dataset.getDataset(allDataset, interleaved=False, shuffled=False)
         predicted = self.network.predict(x)
         
         unitId = 0
@@ -76,19 +77,21 @@ class EmbeddingsDataset:
     
     #returns the embedded vectors, units and Ids, related to the dataindex
     def getDatasetAugmented(self, dataIndex):
-        x, u, y = [], [], []
+        unitMean = self.dataset.getMeanUnit(dataIndex, normalized=True)
+        x, y, u, m = [], [], [], []
         for key in dataIndex:
             for unitId in dataIndex[key]:
                 x.append(self.getEmbedded(key, unitId))
                 u.append(self.dataset.getUnitStep(key, unitId))
+                m.append(unitMean[key])
                 y.append(key)
-        return(np.asarray(x), np.asarray(u), np.asarray(y))
+        return(np.asarray(x), np.asarray(y), np.asarray(u), np.asarray(m))
     
     #Calculates the Centroid of embedded vectors from and index dataset
     def getCentroids(self, dataIndex):
         centroids = {}
         for key in dataIndex:
-            if len(dataIndex[key]) > 0:
+            if len(dataIndex[key]) > 0:                
                 embeddings = np.asarray([self.getEmbedded(key, unitId) for unitId in dataIndex[key]])
                 centroids[key] = np.sum(embeddings, axis=0) / len(dataIndex[key])
         return centroids
@@ -132,27 +135,45 @@ class EmbeddingsDataset:
         
     #Compute the Tsne that represents the embedding vectors of dataIndex
     def getTsne(self, dataIndex):
-        x, y = self.getDataset(dataIndex)
-        m, ym = self.getMeanEncoded(dataIndex)
-        x_train = np.concatenate((x, m), axis=0)        
+        #dataset of centroids
+        centroids = self.getCentroids(dataIndex)
+        c, yc = [],[]
+        for key in centroids:
+            c.append(centroids[key])
+            yc.append(key)
+        yc = np.array(yc)
+
+        #Dataset of embeddings
+        x, y  = self.getDataset(dataIndex)        
+        x_train = np.concatenate((x, c), axis=0)                
+        
+        #Dataset of mean
+        m, ym = np.array([]), np.array([])
+        if self.network != None: 
+            m, ym = self.getMeanEncoded(dataIndex)
+            x_train = np.concatenate((x_train, m), axis=0)        
+            
         x_tsne = TSNE(n_components=2, perplexity=10, init='pca', n_iter=1000, random_state=0).fit_transform(x_train)
         x_min, x_max = np.min(x_tsne, 0), np.max(x_tsne, 0)
         x_tsne = (x_tsne - x_min) / (x_max - x_min)        
-        return(x_tsne[0:len(x),:], y, x_tsne[len(x):len(x_tsne),:], ym)
+        return(x_tsne[0:len(x),:], y, x_tsne[len(x):len(x)+len(c),:], yc, x_tsne[len(x)+len(c):len(x_tsne),:], ym)
                 
     # Scale and visualize the embedding vectors
-    def plotTsne(self, dataIndex, title=None, prototype="*"):
-        X, Yx, M, Ym = self.getTsne(dataIndex)        
+    def plotTsne(self, dataIndex, title=None):
+        X, Yx, C, Yc, M, Ym = self.getTsne(dataIndex)        
         cmap = plt.cm.get_cmap('gist_rainbow')
         fig, ax = plt.subplots(1, 1, figsize=(4, 4))  # setup the plot  
-        index = np.linspace(0, 256, len(Ym)).astype("int")
-        color = dict(zip(Ym, index))         
+        index = np.linspace(0, 256, max(Yx)).astype("int")
+        color = dict(zip(np.unique(Yx), index))         
         
         for i in range(len(Yx)):
             plt.text(X[i, 0], X[i, 1], str("."), color=cmap(color[Yx[i]]),fontdict={'weight': 'bold', 'size': 8})
 
+        for i in range(len(Yc)):
+            plt.text(C[i, 0], C[i, 1], str("x"), color="blue",fontdict={'weight': 'bold', 'size': 8})
+            
         for i in range(len(Ym)):
-            plt.text(M[i, 0], M[i, 1], str(prototype), color="black",fontdict={'weight': 'bold', 'size': 12})
+            plt.text(M[i, 0], M[i, 1], str("*"), color="black",fontdict={'weight': 'bold', 'size': 12})
         
         plt.title(title)        
         plt.axis('off')
@@ -195,7 +216,3 @@ class EmbeddingsDataset:
         plt.title(title)        
         plt.axis('off')
         plt.show()        
-
-    
-    
-        
