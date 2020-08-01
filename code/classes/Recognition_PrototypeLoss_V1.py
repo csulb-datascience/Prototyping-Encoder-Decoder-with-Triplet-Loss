@@ -3,7 +3,7 @@
 # Author: 
 #      Nelson Minaya, email: nelson.minaya@student.csulb.edu
 #
-# Class version: 2.0
+# Class version: 1.0
 # Date: July 2020
 #
 # Include a reference to this site if you will use this code.
