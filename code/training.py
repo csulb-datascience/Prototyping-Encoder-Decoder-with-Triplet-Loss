@@ -94,8 +94,8 @@ for i in range(1, iterations+1):
     datasetNoise10.loadSets(".","datasets.npy")
     
     print("--> Getting the datasets for training")
-    x_train, y_train, m_train = dataset.getDataset(dataset.trainingSet, batchSize=batchSize)
-    x_valid, y_valid, m_valid = dataset.getDataset(dataset.validationSet, batchSize=batchSize)
+    x_train, y_train, c_train = dataset.getDataset(dataset.trainingSet, batchSize=batchSize)
+    x_valid, y_valid, c_valid = dataset.getDataset(dataset.validationSet, batchSize=batchSize)
     
     #Train SVM for each lambda
     for lambdaVal in lambdas:
@@ -104,9 +104,9 @@ for i in range(1, iterations+1):
         print("--> training the autoencoder")
         autoencoder = Autoencoder(dataset.unitSize(), alpha, beta, lambdaVal, learningRate)
         outerModel, encoder = autoencoder.getAutoencoderCNN()
-        outerModel.fit(x_train, y={"encoder": y_train, "decoder": m_train},
+        outerModel.fit(x_train, y={"encoder": y_train, "decoder": c_train},
                batch_size = batchSize, epochs = epochs, 
-               validation_data = (x_valid, {"encoder": y_valid, "decoder": m_valid}))
+               validation_data = (x_valid, {"encoder": y_valid, "decoder": c_valid}))
         
         print("--> Predicting embeddings")
         embeddings0 = EmbeddingsDataset(encoder, dataset)
