@@ -109,8 +109,8 @@ for i in range(1, iterations+1):
                validation_data = (x_valid, {"encoder": y_valid, "decoder": m_valid}))
         
         print("--> Predicting embeddings")
-        embeddings = EmbeddingsDataset(encoder, dataset)
-        embeddings.predictEmbeddings()            
+        embeddings0 = EmbeddingsDataset(encoder, dataset)
+        embeddings0.predictEmbeddings()            
         embeddings5 = EmbeddingsDataset(encoder, datasetNoise5)
         embeddings5.predictEmbeddings()
         embeddings10 = EmbeddingsDataset(encoder, datasetNoise10)
@@ -123,11 +123,12 @@ for i in range(1, iterations+1):
         for gamma in gammas:
             for nu in nus:
                 print("--> Train SVM: gamma=", gamma, " nu=", nu)
-                svm = SVM(embeddings)
+                svm = SVM(embeddings0)
                 svm.fit(randomTrainingSet, gamma=gamma, nu = nu)
 
                 for tau in thresholds:                
                     print("--> Test Noise 0%, tau=", tau)
+                    svm.embeddings = embeddings0                    
                     results = svm.accuracy(dataset.validationSet, dataset.unseenSet, tau)
                     save(saveAs, i, gamma, nu, tau, lambdaVal, 0.00, results)
                     
