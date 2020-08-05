@@ -19,8 +19,7 @@ def getLabels(units, batchSize):
 
     def body(i, v):
         equals = tf.math.equal(units[i], units)
-        reduced = tf.math.reduce_sum(tf.cast(equals, dtype=tf.dtypes.int32), axis=[1,2])
-        mask = tf.cast(tf.math.greater(reduced, 0), dtype=tf.dtypes.int32)
+        mask = tf.math.reduce_min(tf.cast(equals, dtype=tf.dtypes.int32), axis=[1,2])
         duplicate = tf.cast(tf.math.greater(tf.multiply(mask,v),0), dtype=tf.dtypes.int32)
         row = tf.math.multiply(tf.bitwise.bitwise_xor(mask, duplicate), i+1)
         v = tf.add(v, row)
@@ -61,7 +60,7 @@ def prototype_loss(y_true, y_pred):
     sum_anchors = tf.math.reduce_sum(norm_anchors)
     num_anchors = tf.math.reduce_sum(mask_anchors)    
     prototype_loss = tf.math.truediv(sum_anchors, num_anchors)
-    return prototype_loss      
+    return prototype_loss 
 
 
 class PrototypeLoss(tf.keras.losses.Loss):
